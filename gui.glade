@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.2 
+
+The MIT License (MIT)
+
+Copyright (c) 
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+-->
+<interface domain="cs">
+  <requires lib="gtk+" version="3.20"/>
+  <!-- interface-license-type mit -->
+  <!-- interface-name Jakub Cizek -->
+  <object class="GtkImage" id="icoPause">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-media-pause</property>
+  </object>
+  <object class="GtkImage" id="icoPlay">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-media-play</property>
+  </object>
+  <object class="GtkImage" id="icoSettings">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-properties</property>
+  </object>
+  <object class="GtkApplicationWindow" id="wndMain">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Multicomp Pro (MP730424)</property>
+    <property name="resizable">False</property>
+    <property name="modal">True</property>
+    <property name="window_position">center</property>
+    <property name="icon_name">computer</property>
+    <property name="gravity">center</property>
+    <signal name="destroy" handler="on_destroy_wndmain" swapped="no"/>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="hbMain">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Digitální multimetr Multicomp Pro (MP730424)</property>
+        <property name="subtitle" translatable="yes">Zařízení připojeno na /dev/ttyUSB0</property>
+        <property name="show_close_button">True</property>
+        <child>
+          <object class="GtkImage" id="icoApp">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="icon_name">computer</property>
+            <property name="icon_size">3</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="btnSetup">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">icoSettings</property>
+            <property name="relief">half</property>
+            <property name="always_show_image">True</property>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="btnPlayPause">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">icoPause</property>
+            <property name="relief">half</property>
+            <signal name="clicked" handler="on_clicked_playpause" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkFixed">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="margin_left">20</property>
+        <property name="margin_right">20</property>
+        <property name="margin_top">20</property>
+        <property name="margin_bottom">20</property>
+        <child>
+          <object class="GtkLabel" id="lblFunction">
+            <property name="width_request">670</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="label" translatable="yes">Napětí (VDC)</property>
+            <property name="justify">center</property>
+            <property name="width_chars">0</property>
+            <property name="max_width_chars">0</property>
+            <property name="track_visited_links">False</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace Bold 10"/>
+              <attribute name="scale" value="3"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lblValue">
+            <property name="width_request">670</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="label" translatable="yes">13,323569</property>
+            <property name="justify">center</property>
+            <property name="selectable">True</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace Bold Condensed 10"/>
+              <attribute name="scale" value="8"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">130</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lblMax">
+            <property name="width_request">150</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">66789.856355</property>
+            <property name="justify">right</property>
+            <property name="selectable">True</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace 10"/>
+              <attribute name="scale" value="1.5"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">60</property>
+            <property name="y">300</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lblMin">
+            <property name="width_request">150</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">-2983.589459</property>
+            <property name="selectable">True</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace 10"/>
+              <attribute name="scale" value="1.5"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">60</property>
+            <property name="y">330</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lblAvg">
+            <property name="width_request">150</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">3.569823</property>
+            <property name="selectable">True</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace 10"/>
+              <attribute name="scale" value="1.5"/>
+              <attribute name="gravity" value="west"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">60</property>
+            <property name="y">360</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lblFile">
+            <property name="width_request">250</property>
+            <property name="height_request">20</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="label" translatable="yes">zaznam_210920223825.csv</property>
+            <property name="justify">center</property>
+            <property name="xalign">1</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace 10"/>
+              <attribute name="weight" value="normal"/>
+              <attribute name="scale" value="1.25"/>
+              <attribute name="gravity" value="east"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">420</property>
+            <property name="y">330</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lblCounter">
+            <property name="width_request">250</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="label" translatable="yes"># 000001</property>
+            <property name="justify">right</property>
+            <property name="xalign">1</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace Bold 10"/>
+              <attribute name="weight" value="bold"/>
+              <attribute name="scale" value="1.5"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">420</property>
+            <property name="y">360</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">50</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Max:</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace Bold 10"/>
+              <attribute name="scale" value="1.5"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">300</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">50</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Min:</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace Bold 10"/>
+              <attribute name="scale" value="1.5"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">330</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width_request">50</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Avg:</property>
+            <property name="xalign">0</property>
+            <attributes>
+              <attribute name="font-desc" value="Monospace Bold 10"/>
+              <attribute name="scale" value="1.5"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">360</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
