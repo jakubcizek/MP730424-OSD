@@ -17,8 +17,6 @@ void multimeter_communication_init(int argc, char **argv) {
 	g.error_flag = 0;
 	g.interval = 100000;
 	g.serial_timeout = 3;
-	strncpy(g.get_func, "FUNC?\n", 7);
-	strncpy(g.meas_value, "MEAS?\n", 7);
 	struct lconv *lc;
   	lc = localeconv();
   	g.decimal_point = lc->decimal_point;
@@ -56,6 +54,11 @@ void multimeter_open_port() {
 	g_print("OK (FD = %d)\r\n", g.serial.fd);
 }
 
+
+void multimeter_close_port(){
+	close(g.serial.fd);
+}
+
 static ssize_t serial_read_data(char *b, ssize_t s) {
 	ssize_t sz;
 	*b = '\0';
@@ -88,12 +91,17 @@ static ssize_t serial_write_data(char *d, ssize_t s) {
 	return sz;
 }
 
-void multimeter_read(uint8_t *function, double *value, gchar *units){
-	char buf_func[100];
-	char buf_value[100];
-	char buf_units[10];
-	char buf_multiplier[10];
+void multimeter_ping(gchar *response){
+	ssize_t sz = serial_write_data(CMD_IDENTIFICATION, CMD_IDENTIFICATION_SIZE);
+	if(sz > -1){
+		sz = serial_read_data(response, MAX_LABEL_SIZE);
+	}
+}
 
+void multimeter_read(uint8_t *function, double *value, gchar *units){
+	char buf_func[MAX_LABEL_SIZE];
+	char buf_value[MAX_LABEL_SIZE];
+	char buf_multiplier[10];
 
 	char *p, *q;
 	double v = 0.0;
@@ -104,14 +112,14 @@ void multimeter_read(uint8_t *function, double *value, gchar *units){
 	ssize_t sz;
     int flag_ol = 0;
 
-    sz = serial_write_data(g.get_func, strlen(g.get_func)  );
+    sz = serial_write_data(CMD_FN, CMD_FN_SIZE);
 	if (sz > -1) {
 		sz = serial_read_data(buf_func, sizeof(buf_func) );
 		if (sz > -1) 
 			if (strstr(buf_func,"E+") || strstr(buf_func,"E-")) sz = serial_read_data(buf_func, sizeof(buf_func) );
 	}
 
-	sz = serial_write_data(g.meas_value, strlen(g.meas_value));
+	sz = serial_write_data(CMD_MEASUREMENT, CMD_MEASUREMENT_SIZE);
 	if (sz > -1) {
 		sz = serial_read_data(buf_value, sizeof(buf_value));
 	}
@@ -131,39 +139,39 @@ void multimeter_read(uint8_t *function, double *value, gchar *units){
 
 		if (strncmp("\"DIOD",buf_func, 5)==0) {
 			*function = FN_DIODE;
-			snprintf(buf_units,sizeof(buf_units) ,"%s", oo);
+			g_snprintf(units,MAX_LABEL_SIZE ,"%s", oo);
 		} 
 		else if (strncmp("\"CONT",buf_func, 5)==0) {
 			*function = FN_CONTIINUITY;
-			snprintf(buf_units,sizeof(buf_units) ,"V");
+			g_snprintf(units,MAX_LABEL_SIZE ,"V");
 		} 
 		else if (strncmp("\"VOLT AC\"",buf_func, 6)==0) {
 			*function = FN_VOLTAGE_AC;
-			snprintf(buf_units,sizeof(buf_units) ,"V");
+			g_snprintf(units,MAX_LABEL_SIZE ,"V");
 		} 
 		else if (strncmp("\"VOLT\"",buf_func, 6)==0) {
 			*function = FN_VOLTAGE_DC;
-			snprintf(buf_units,sizeof(buf_units) ,"V");
+			g_snprintf(units,MAX_LABEL_SIZE ,"V");
 		} 
 		else if (strncmp("\"CURR",buf_func, 5)==0) {
 			*function = FN_CURRENT;
-			snprintf(buf_units,sizeof(buf_units) ,"A");
+			g_snprintf(units,MAX_LABEL_SIZE ,"A");
 		} 
 		else if (strncmp("\"RES",buf_func, 4)==0) {
 			*function = FN_RESISTANCE;
-			snprintf(buf_units,sizeof(buf_units) ,"%s", oo);
+			g_snprintf(units,MAX_LABEL_SIZE ,"%s", oo);
 		} 
 		else if (strncmp("\"CAP",buf_func, 4)==0) {
 			*function = FN_CAPACITANCE;
-			snprintf(buf_units,sizeof(buf_units) ,"F");
+			g_snprintf(units,MAX_LABEL_SIZE ,"F");
 		} 
 		else if (strncmp("\"FREQ",buf_func, 5)==0) {
 			*function = FN_DIODE;
-			snprintf(buf_units,sizeof(buf_units) ,"Hz");
+			g_snprintf(units,MAX_LABEL_SIZE ,"Hz");
 		} 
 		else if (strncmp("\"TEMP",buf_func, 5)==0) {
 			*function = FN_TEMPERATURE;
-			snprintf(buf_units,sizeof(buf_units) ,"%sC", dd);
+			g_snprintf(units,MAX_LABEL_SIZE ,"%sC", dd);
 		} 
 
 		if (flag_ol == 0) {
@@ -219,5 +227,5 @@ void multimeter_read(uint8_t *function, double *value, gchar *units){
 		}
     }
 
-    *units = *buf_units;
+    *units = *units;
 }

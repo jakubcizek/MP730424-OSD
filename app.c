@@ -11,7 +11,6 @@
 
 #include "communication.h"
 
-#define MAX_LABEL_SIZE 100
 #define AVG_SAMPLES 10
 
 #define REASON_SIGINT 0
@@ -118,7 +117,7 @@ void *loop_uart(void *args){
 
       double value;
       uint8_t function;
-      gchar units[20];
+      gchar units[MAX_LABEL_SIZE];
       multimeter_read(&function, &value, units);
 
 
@@ -176,6 +175,23 @@ int main(int argc, char **argv){
   // Otevreni serioveho portu
   multimeter_open_port();
 
+  // Dpotaz na verzi/podpis multimetru
+  // Overeni, ze funguje AT/SCPI komunikace
+  gchar multimeter_info[MAX_LABEL_SIZE];
+  multimeter_ping(multimeter_info);
+  if(strlen(multimeter_info) == 0){
+    g_print("Zařízení %s neodpovídá na AT/SCPI dotaz \"*IDN?\"\r\n", g.serial.device);
+    g_print("Nejedná se o multimetr Multicomp Pro!\r\n");
+    close(g.serial.fd);
+    exit(1);
+  }
+  else{
+    g_print("============================================\r\n");
+    g_print("Detekoval jsem sériové SCPI zařízení:\r\n");
+    g_print("%s\r\n", multimeter_info);
+    g_print("============================================\r\n");
+  }
+
   // Vytvoreni noveho logovaciho souboru
   // zaznam_yymmddhhiiss.csv
   uint32_t ms;
@@ -229,6 +245,9 @@ int main(int argc, char **argv){
 
   // Uzavreni logovaciho souboru
   fclose(logfile);
+
+  // Uzavreni serioveho spojeni
+  multimeter_close_port();
 
   // Rozlouceni
   g_print("Ukončuji vlákno aplikace\r\n");
