@@ -73,20 +73,6 @@ THE SOFTWARE.
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="btnPlayPause">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="image">icoPause</property>
-            <property name="relief">half</property>
-            <signal name="clicked" handler="on_clicked_playpause" swapped="no"/>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkButton" id="btnSetup">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -96,6 +82,20 @@ THE SOFTWARE.
             <property name="relief">half</property>
             <property name="always_show_image">True</property>
             <signal name="clicked" handler="on_clicked_setup" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="btnPlayPause">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">icoPause</property>
+            <property name="relief">half</property>
+            <signal name="clicked" handler="on_clicked_playpause" swapped="no"/>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -141,11 +141,11 @@ THE SOFTWARE.
             <property name="can_focus">False</property>
             <property name="tooltip_text" translatable="yes">Hodnota</property>
             <property name="halign">center</property>
-            <property name="label" translatable="yes">13,323569</property>
+            <property name="label" translatable="yes">13,0123456789</property>
             <property name="justify">center</property>
             <property name="selectable">True</property>
             <attributes>
-              <attribute name="font-desc" value="Monospace Bold Condensed 10"/>
+              <attribute name="font-desc" value="Monospace Bold Condensed 6"/>
               <attribute name="scale" value="8"/>
             </attributes>
           </object>
