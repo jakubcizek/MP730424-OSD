@@ -124,108 +124,44 @@ void multimeter_read(uint8_t *function, double *value, gchar *units){
 		sz = serial_read_data(buf_value, sizeof(buf_value));
 	}
 
-    if (strncmp(buf_value, "1E+9", 4)==0) {
-		flag_ol = 1;
-	}
-    else {
-		char *e;
-		flag_ol = 0;
-        char *pos = strchr(buf_value, '.');
-        if(pos) *pos = *g.decimal_point;
-		*value = strtod(buf_value,NULL);
-		e = strstr(buf_value,"E+");
-		if (!e) e = strstr(buf_value, "E-");
-		if (e) ev = strtol(e+2, NULL, 10);
+    char *pos = strchr(buf_value, '.');
+    if(pos) *pos = *g.decimal_point;
+	*value = strtod(buf_value,NULL);
 
-		if (strncmp("\"DIOD",buf_func, 5)==0) {
-			*function = FN_DIODE;
-			g_snprintf(units,MAX_LABEL_SIZE ,"%s", oo);
-		} 
-		else if (strncmp("\"CONT",buf_func, 5)==0) {
-			*function = FN_CONTIINUITY;
-			g_snprintf(units,MAX_LABEL_SIZE ,"V");
-		} 
-		else if (strncmp("\"VOLT AC\"",buf_func, 6)==0) {
-			*function = FN_VOLTAGE_AC;
-			g_snprintf(units,MAX_LABEL_SIZE ,"V");
-		} 
-		else if (strncmp("\"VOLT\"",buf_func, 6)==0) {
-			*function = FN_VOLTAGE_DC;
-			g_snprintf(units,MAX_LABEL_SIZE ,"V");
-		} 
-		else if (strncmp("\"CURR",buf_func, 5)==0) {
-			*function = FN_CURRENT;
-			g_snprintf(units,MAX_LABEL_SIZE ,"A");
-		} 
-		else if (strncmp("\"RES",buf_func, 4)==0) {
-			*function = FN_RESISTANCE;
-			g_snprintf(units,MAX_LABEL_SIZE ,"%s", oo);
-		} 
-		else if (strncmp("\"CAP",buf_func, 4)==0) {
-			*function = FN_CAPACITANCE;
-			g_snprintf(units,MAX_LABEL_SIZE ,"F");
-		} 
-		else if (strncmp("\"FREQ",buf_func, 5)==0) {
-			*function = FN_DIODE;
-			g_snprintf(units,MAX_LABEL_SIZE ,"Hz");
-		} 
-		else if (strncmp("\"TEMP",buf_func, 5)==0) {
-			*function = FN_TEMPERATURE;
-			g_snprintf(units,MAX_LABEL_SIZE ,"%sC", dd);
-		} 
-
-		if (flag_ol == 0) {
-		    switch (ev) {
-			    case -12:
-			    case -11:
-			    case -10:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), "n");
-				    *value *= 1E+9;
-				    break;
-
-			    case -9:
-			    case -8:
-			    case -7:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), "%s", uu);
-				    *value *= 1E+6;
-				    break;
-
-			    case -6:
-			    case -5:
-			    case -4:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), "m");
-				    *value *= 1E+3;
-				    break;
-
-			    case -3:
-			    case -2:
-			    case -1:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), " ");
-				    break;
-
-			    case 0:
-			    case 1:
-			    case 2:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), " ");
-				    break;
-
-			    case 3:
-			    case 4:
-			    case 5:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), "k");
-				    *value /= 1E+3;
-				    break;
-
-			    case 6:
-			    case 7:
-			    case 8:
-			    case 9:
-				    snprintf(buf_multiplier, sizeof(buf_multiplier), "M");
-				    *value /= 1E+6;
-				    break;
-		    }
-		}
-    }
-
-    *units = *units;
+	if (strncmp("\"DIOD",buf_func, 5)==0) {
+		*function = FN_DIODE;
+		g_snprintf(units,MAX_LABEL_SIZE ,"%s", oo);
+	} 
+	else if (strncmp("\"CONT",buf_func, 5)==0) {
+		*function = FN_CONTIINUITY;
+		g_snprintf(units,MAX_LABEL_SIZE ,"V");
+	} 
+	else if (strncmp("\"VOLT AC\"",buf_func, 6)==0) {
+		*function = FN_VOLTAGE_AC;
+		g_snprintf(units,MAX_LABEL_SIZE ,"V");
+	} 
+	else if (strncmp("\"VOLT\"",buf_func, 6)==0) {
+		*function = FN_VOLTAGE_DC;
+		g_snprintf(units,MAX_LABEL_SIZE ,"V");
+	} 
+	else if (strncmp("\"CURR",buf_func, 5)==0) {
+		*function = FN_CURRENT;
+		g_snprintf(units,MAX_LABEL_SIZE ,"A");
+	} 
+	else if (strncmp("\"RES",buf_func, 4)==0) {
+		*function = FN_RESISTANCE;
+		g_snprintf(units,MAX_LABEL_SIZE ,"%s", oo);
+	} 
+	else if (strncmp("\"CAP",buf_func, 4)==0) {
+		*function = FN_CAPACITANCE;
+		g_snprintf(units,MAX_LABEL_SIZE ,"F");
+	} 
+	else if (strncmp("\"FREQ",buf_func, 5)==0) {
+		*function = FN_DIODE;
+		g_snprintf(units,MAX_LABEL_SIZE ,"Hz");
+	} 
+	else if (strncmp("\"TEMP",buf_func, 5)==0) {
+		*function = FN_TEMPERATURE;
+		g_snprintf(units,MAX_LABEL_SIZE ,"%sC", dd);
+	} 
 }
