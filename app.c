@@ -125,8 +125,8 @@ void *loop_uart(void *args){
       uint32_t ms;
   		get_formated_datetime(dt, sizeof(dt), "%d.%m.%Y;%H:%M:%S", &ms);
 			// Zapis do textoveho souboru
-			fprintf(logfile, "%s.%03d;%f;%s;%s\r\n", dt, ms, value, units, fn_names[function]);
-      g_print("%06d\t%f %s\t(%s)\r", i, value, units, fn_names[function]);
+			fprintf(logfile, "%s.%03d;%.10f;%s;%s\r\n", dt, ms, value, units, fn_names[function]);
+      g_print("%06d\t%.10f %s\t(%s)\r", i, value, units, fn_names[function]);
 
 
       samples[samples_count++] = value;
@@ -144,7 +144,7 @@ void *loop_uart(void *args){
       if(value < min) min = value;
 
       g_snprintf(sfunction, MAX_LABEL_SIZE, "%s (%s)", fn_names[function], units);
-      g_snprintf(svalue, MAX_LABEL_SIZE, "%.6f", value);
+      g_snprintf(svalue, MAX_LABEL_SIZE, "%.10f", value);
       g_snprintf(smin, MAX_LABEL_SIZE, "%.6f", min);
       g_snprintf(smax, MAX_LABEL_SIZE, "%.6f", max);
       g_snprintf(savg, MAX_LABEL_SIZE, "%.6f", average);
