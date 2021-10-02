@@ -224,18 +224,11 @@ int main(int argc, char **argv)
   // Otevreni serioveho portu
   multimeter_open_port();
 
-  // Dpotaz na verzi/podpis multimetru
+  // Dotaz na verzi/podpis multimetru
   // Overeni, ze funguje AT/SCPI komunikace
   gchar multimeter_info[MAX_LABEL_SIZE];
   multimeter_ping(multimeter_info);
-  if (strlen(multimeter_info) == 0)
-  {
-    g_print("Zařízení %s neodpovídá na AT/SCPI dotaz \"*IDN?\"\r\n", g.serial.device);
-    g_print("Nejedná se o multimetr Multicomp Pro!\r\n");
-    close(g.serial.fd);
-    exit(1);
-  }
-  else
+  if (strlen(multimeter_info) > 0)
   {
     g_print("============================================\r\n");
     g_print("Detekoval jsem sériové SCPI zařízení:\r\n");
