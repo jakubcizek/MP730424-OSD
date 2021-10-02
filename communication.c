@@ -1,5 +1,6 @@
-
 #include "communication.h"
+
+Config config;
 
 gchar fn_names[9][50] = {
 	FN_NAME_DIODE,
@@ -14,14 +15,14 @@ gchar fn_names[9][50] = {
 
 void multimeter_communication_init(int argc, char **argv)
 {
-	g.error_flag = 0;
-	g.interval = 100000;
-	g.serial_timeout = 3;
+	config.error_flag = 0;
+	config.interval = 100000;
+	config.serial_timeout = 3;
 	struct lconv *lc;
 	lc = localeconv();
-	g.decimal_point = lc->decimal_point;
+	config.decimal_point = lc->decimal_point;
 	if (argc == 2)
-		g.serial.device = argv[1];
+		config.serial.device = argv[1];
 	else
 	{
 		g_print("Uveď cestu k sériovému portu multimetru!\r\nTřeba: mp730424 /dev/ttyUSB0\r\n");
@@ -33,34 +34,34 @@ void multimeter_open_port()
 {
 	int r;
 
-	g_print("Pokouším se otevřít %s ... ", g.serial.device);
-	g.serial.fd = open(g.serial.device, O_RDWR | O_NOCTTY | O_NDELAY);
-	fcntl(g.serial.fd, F_SETFL, 0);
-	tcgetattr(g.serial.fd, &(g.serial.oldtp));
-	tcgetattr(g.serial.fd, &(g.serial.newtp));
-	cfmakeraw(&(g.serial.newtp));
+	g_print("Pokouším se otevřít %s ... ", config.serial.device);
+	config.serial.fd = open(config.serial.device, O_RDWR | O_NOCTTY | O_NDELAY);
+	fcntl(config.serial.fd, F_SETFL, 0);
+	tcgetattr(config.serial.fd, &(config.serial.oldtp));
+	tcgetattr(config.serial.fd, &(config.serial.newtp));
+	cfmakeraw(&(config.serial.newtp));
 
-	g.serial.newtp.c_cflag = CS8 | CLOCAL | CREAD;
-	g.serial.newtp.c_cflag |= B115200;
-	g.serial.newtp.c_cc[VMIN] = 0;
-	g.serial.newtp.c_cc[VTIME] = g.serial_timeout * 10;
-	g.serial.newtp.c_cflag &= ~(PARODD | PARENB);
-	g.serial.newtp.c_cflag &= ~CSTOPB;
-	g.serial.newtp.c_iflag &= ~(IXON | IXOFF | IXANY);
+	config.serial.newtp.c_cflag = CS8 | CLOCAL | CREAD;
+	config.serial.newtp.c_cflag |= B115200;
+	config.serial.newtp.c_cc[VMIN] = 0;
+	config.serial.newtp.c_cc[VTIME] = config.serial_timeout * 10;
+	config.serial.newtp.c_cflag &= ~(PARODD | PARENB);
+	config.serial.newtp.c_cflag &= ~CSTOPB;
+	config.serial.newtp.c_iflag &= ~(IXON | IXOFF | IXANY);
 
-	if (tcsetattr(g.serial.fd, TCSANOW, &(g.serial.newtp)))
+	if (tcsetattr(config.serial.fd, TCSANOW, &(config.serial.newtp)))
 	{
 		g_print("CHYBA!\r\n");
-		g_print("Vybrali jste správné zařízení?\r\nKomunikuje rychlostí 115200 b/s a s konfigurací 8n1?\r\n");
+		g_print(" 1) Vybrali jste správné zařízení?\r\n 2) Komunikuje rychlostí 115200 b/s a s konfigurací 8n1?\r\n 3) Máte právo pro přístup k \"%s\"?\r\n", config.serial.device);
 		exit(1);
 	}
 
-	g_print("OK (FD = %d)\r\n", g.serial.fd);
+	g_print("OK (FD = %d)\r\n", config.serial.fd);
 }
 
 void multimeter_close_port()
 {
-	close(g.serial.fd);
+	close(config.serial.fd);
 }
 
 static ssize_t serial_read_data(char *b, ssize_t s)
@@ -71,7 +72,7 @@ static ssize_t serial_read_data(char *b, ssize_t s)
 	do
 	{
 		char temp_char;
-		sz = read(g.serial.fd, &temp_char, 1);
+		sz = read(config.serial.fd, &temp_char, 1);
 		if (sz == -1)
 		{
 			b[0] = '\0';
@@ -95,10 +96,10 @@ static ssize_t serial_read_data(char *b, ssize_t s)
 static ssize_t serial_write_data(char *d, ssize_t s)
 {
 	ssize_t sz;
-	sz = write(g.serial.fd, d, s);
+	sz = write(config.serial.fd, d, s);
 	if (sz < 0)
 	{
-		g.error_flag = 1;
+		config.error_flag = 1;
 		g_print("Chyba v odesílání sériových dat\r\n");
 	}
 	return sz;
@@ -145,7 +146,7 @@ void multimeter_read(uint8_t *function, double *value, gchar *units)
 
 	char *pos = strchr(buf_value, '.');
 	if (pos)
-		*pos = *g.decimal_point;
+		*pos = *config.decimal_point;
 	*value = strtod(buf_value, NULL);
 
 	if (strncmp("\"DIOD", buf_func, 5) == 0)

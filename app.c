@@ -157,7 +157,7 @@ void *loop_uart(void *args)
       if (value < min)
         min = value;
 
-      char prefix = '';
+      char prefix = '\0';
 
       if (value > 999999.0)
       {
@@ -186,14 +186,14 @@ void *loop_uart(void *args)
       }
 
       g_snprintf(sfunction, MAX_LABEL_SIZE, "%s (%c%s)", fn_names[function], prefix, units);
-      if (prefix == '')
+      if (prefix == '\0')
         g_snprintf(svalue, MAX_LABEL_SIZE, "%.10f", value);
       else
         g_snprintf(svalue, MAX_LABEL_SIZE, "%.3f", value);
       g_snprintf(smin, MAX_LABEL_SIZE, "%.6f", min);
       g_snprintf(smax, MAX_LABEL_SIZE, "%.6f", max);
       g_snprintf(savg, MAX_LABEL_SIZE, "%.6f", average);
-      g_snprintf(sfile, MAX_LABEL_SIZE, "%s", g.logfilename);
+      g_snprintf(sfile, MAX_LABEL_SIZE, "%s", config.logfilename);
       g_snprintf(scounter, MAX_LABEL_SIZE, "# %06d", i);
       gtk_label_set_text(GTK_LABEL(lblFunction), sfunction);
       gtk_label_set_text(GTK_LABEL(lblValue), svalue);
@@ -204,13 +204,13 @@ void *loop_uart(void *args)
       gtk_label_set_text(GTK_LABEL(lblCounter), scounter);
       i++;
     }
-    if (g.error_flag)
+    if (config.error_flag)
     {
       sleep(1);
     }
     else
     {
-      usleep(g.interval);
+      usleep(config.interval);
     }
   }
 }
@@ -224,18 +224,11 @@ int main(int argc, char **argv)
   // Otevreni serioveho portu
   multimeter_open_port();
 
-  // Dpotaz na verzi/podpis multimetru
+  // Dotaz na verzi/podpis multimetru
   // Overeni, ze funguje AT/SCPI komunikace
   gchar multimeter_info[MAX_LABEL_SIZE];
   multimeter_ping(multimeter_info);
-  if (strlen(multimeter_info) == 0)
-  {
-    g_print("Zařízení %s neodpovídá na AT/SCPI dotaz \"*IDN?\"\r\n", g.serial.device);
-    g_print("Nejedná se o multimetr Multicomp Pro!\r\n");
-    close(g.serial.fd);
-    exit(1);
-  }
-  else
+  if (strlen(multimeter_info) > 0)
   {
     g_print("============================================\r\n");
     g_print("Detekoval jsem sériové SCPI zařízení:\r\n");
@@ -246,8 +239,8 @@ int main(int argc, char **argv)
   // Vytvoreni noveho logovaciho souboru
   // zaznam_yymmddhhiiss.csv
   uint32_t ms;
-  get_formated_datetime(g.logfilename, sizeof(g.logfilename), "zaznam_%y%m%d%H%M%S.csv", &ms);
-  logfile = fopen(g.logfilename, "w");
+  get_formated_datetime(config.logfilename, sizeof(config.logfilename), "zaznam_%y%m%d%H%M%S.csv", &ms);
+  logfile = fopen(config.logfilename, "w");
 
   // Stavime okno programu z externiho XML
   builder = gtk_builder_new();
@@ -259,7 +252,7 @@ int main(int argc, char **argv)
   // Propojeni hlavicky okna
   header = GTK_WIDGET(gtk_builder_get_object(builder, "hbMain"));
   char subtitle[MAX_LABEL_SIZE];
-  g_snprintf(subtitle, MAX_LABEL_SIZE, "Zařízení připojeno na %s", g.serial.device);
+  g_snprintf(subtitle, MAX_LABEL_SIZE, "Zařízení připojeno na %s", config.serial.device);
   gtk_header_bar_set_subtitle(GTK_HEADER_BAR(header), subtitle);
 
   // Propojeni labelu v hlavnim okne

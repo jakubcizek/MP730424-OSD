@@ -43,8 +43,6 @@
 
 #define MAX_LABEL_SIZE 200
 
-extern gchar fn_names[9][50];
-
 struct serial_params_s
 {
 	char *device;
@@ -53,7 +51,7 @@ struct serial_params_s
 	struct termios oldtp, newtp;
 };
 
-typedef struct glb
+typedef struct Config
 {
 	uint16_t error_flag;
 	char logfilename[30];
@@ -61,9 +59,7 @@ typedef struct glb
 	int serial_timeout;
 	int interval;
 	char *decimal_point;
-} glb;
-
-glb g;
+} Config;
 
 extern void multimeter_communication_init(int argc, char **argv);
 extern void multimeter_open_port();
@@ -72,5 +68,7 @@ extern void multimeter_ping(gchar *response);
 static ssize_t serial_write_data(char *d, ssize_t s);
 static ssize_t serial_read_data(char *b, ssize_t s);
 extern void multimeter_read(uint8_t *function, double *value, gchar *units);
+extern gchar fn_names[9][50];
+extern Config config;
 
 #endif
