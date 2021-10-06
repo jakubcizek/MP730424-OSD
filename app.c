@@ -157,42 +157,50 @@ void *loop_uart(void *args)
       if (value < min)
         min = value;
 
-      char prefix = '\0';
 
-      if (value > 999999.0)
+      double prefixedValue = 0.0f;
+      char prefix = '?';
+      if (value > 999999.0f)
       {
         prefix = 'M';
-        value /= 1000000.0f;
+        prefixedValue = value / 1000000.0f;
       }
-      else if (value > 999.0)
+      if (value > 999.0f)
       {
         prefix = 'k';
-        value /= 1000.0f;
+        prefixedValue = value / 1000.0f;
       }
-      else if (value > 1.0)
+      if (value < 1.0f)
       {
         prefix = 'm';
-        value *= 1000.0f;
+        prefixedValue = value * 1000.0f;
       }
-      else if (value > 0.01)
+      if (value < 0.001f)
       {
         prefix = 'u';
-        value *= 1000000.0f;
+        prefixedValue = value * 1000000.0f;
       }
-      else if (value > 0.00001)
+      if (value < 0.000001f)
       {
         prefix = 'n';
-        value *= 1000000000.0f;
+        prefixedValue = value * 1000000000.0f;
       }
 
-      g_snprintf(sfunction, MAX_LABEL_SIZE, "%s (%c%s)", fn_names[function], prefix, units);
-      if (prefix == '\0')
-        g_snprintf(svalue, MAX_LABEL_SIZE, "%.10f", value);
+      if(prefix == '?')
+      {
+        g_snprintf(sfunction, MAX_LABEL_SIZE, "%s (%s)", fn_names[function], units);
+        g_snprintf(svalue, MAX_LABEL_SIZE, "%.7f", value);
+
+      }
       else
-        g_snprintf(svalue, MAX_LABEL_SIZE, "%.3f", value);
-      g_snprintf(smin, MAX_LABEL_SIZE, "%.6f", min);
-      g_snprintf(smax, MAX_LABEL_SIZE, "%.6f", max);
-      g_snprintf(savg, MAX_LABEL_SIZE, "%.6f", average);
+      {
+        g_snprintf(sfunction, MAX_LABEL_SIZE, "%s (%c%s)", fn_names[function], prefix, units);
+        g_snprintf(svalue, MAX_LABEL_SIZE, "%.3f", prefixedValue);
+      }
+      
+      g_snprintf(smin, MAX_LABEL_SIZE, "%.10f", min);
+      g_snprintf(smax, MAX_LABEL_SIZE, "%.10f", max);
+      g_snprintf(savg, MAX_LABEL_SIZE, "%.10f", average);
       g_snprintf(sfile, MAX_LABEL_SIZE, "%s", config.logfilename);
       g_snprintf(scounter, MAX_LABEL_SIZE, "# %06d", i);
       gtk_label_set_text(GTK_LABEL(lblFunction), sfunction);
