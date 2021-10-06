@@ -15,6 +15,8 @@
 #define REASON_SIGINT 0
 #define REASON_GTK_EXIT 1
 
+#define GUI_XML_FILE "gui.xml"
+
 FILE *logfile;
 
 GtkBuilder *builder;
@@ -198,9 +200,9 @@ void *loop_uart(void *args)
         g_snprintf(svalue, MAX_LABEL_SIZE, "%.3f", prefixedValue);
       }
       
-      g_snprintf(smin, MAX_LABEL_SIZE, "%.10f", min);
-      g_snprintf(smax, MAX_LABEL_SIZE, "%.10f", max);
-      g_snprintf(savg, MAX_LABEL_SIZE, "%.10f", average);
+      g_snprintf(smin, MAX_LABEL_SIZE, "%.10f %s", min, units);
+      g_snprintf(smax, MAX_LABEL_SIZE, "%.10f %s", max, units);
+      g_snprintf(savg, MAX_LABEL_SIZE, "%.10f %s", average, units);
       g_snprintf(sfile, MAX_LABEL_SIZE, "%s", config.logfilename);
       g_snprintf(scounter, MAX_LABEL_SIZE, "# %06d", i);
       gtk_label_set_text(GTK_LABEL(lblFunction), sfunction);
@@ -252,7 +254,7 @@ int main(int argc, char **argv)
 
   // Stavime okno programu z externiho XML
   builder = gtk_builder_new();
-  gtk_builder_add_from_file(builder, "gui.glade", NULL);
+  gtk_builder_add_from_file(builder, GUI_XML_FILE, NULL);
 
   // Propojeni hlavniho okna
   window = GTK_WIDGET(gtk_builder_get_object(builder, "wndMain"));
