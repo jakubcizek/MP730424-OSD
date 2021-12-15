@@ -54,7 +54,7 @@ struct serial_params_s
 typedef struct Config
 {
 	uint16_t error_flag;
-	char logfilename[30];
+	char logfilename[31];
 	struct serial_params_s serial;
 	int serial_timeout;
 	int interval;
