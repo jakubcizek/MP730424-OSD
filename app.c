@@ -17,7 +17,7 @@
 
 #define GUI_XML_FILE "gui.xml"
 
-FILE *logfile;
+FILE *logfile = NULL;
 
 GtkBuilder *builder;
 
@@ -35,9 +35,13 @@ GtkWidget *lblCounter;
 GtkWidget *btnPlayPause;
 GtkWidget *icoPlay;
 GtkWidget *icoPause;
+GtkWidget *chbSavingToFile;
 
 uint8_t uart_thread_running = 1;
 uint8_t uart_logging = 1;
+
+uint8_t saving_to_file = 0;
+uint8_t is_file_opened = 0;
 
 void get_formated_datetime(char *strtimedate, int maxsize, const char *format, uint32_t *ms)
 {
@@ -53,6 +57,14 @@ void get_formated_datetime(char *strtimedate, int maxsize, const char *format, u
   }
   tm_info = localtime(&tv.tv_sec);
   strftime(strtimedate, maxsize, format, tm_info);
+}
+
+void prepareFile(){
+  // Vytvoreni noveho logovaciho souboru
+  // zaznam_yymmddhhiiss.csv
+  uint32_t ms;
+  get_formated_datetime(config.logfilename, sizeof(config.logfilename), "zaznam_%d.%m.%Y_%H:%M:%S.csv", &ms);
+  logfile = fopen(config.logfilename, "w");
 }
 
 void kill_me(uint8_t reason)
@@ -84,6 +96,21 @@ void on_sigint(int si)
 void on_destroy_wndmain(GtkWidget *widget, gpointer data)
 {
   kill_me(REASON_GTK_EXIT);
+}
+
+void on_toggle_savingtofile(GtkToggleButton *button, gpointer data)
+{
+  if(saving_to_file == 0){
+    prepareFile();
+    is_file_opened = 1;
+    saving_to_file = 1;
+  }
+  else{
+    fclose(logfile);
+    strcpy(config.logfilename, "\0");
+    saving_to_file = 0;
+    is_file_opened = 0;
+  }
 }
 
 void on_clicked_setup(GtkButton *button, gpointer data)
@@ -138,7 +165,9 @@ void *loop_uart(void *args)
       uint32_t ms;
       get_formated_datetime(dt, sizeof(dt), "%d.%m.%Y;%H:%M:%S", &ms);
       // Zapis do textoveho souboru
-      fprintf(logfile, "%s.%03d;%.10f;%s;%s\r\n", dt, ms, value, units, fn_names[function]);
+      if(saving_to_file == 1){
+        fprintf(logfile, "%s.%03d;%.10f;%s;%s\r\n", dt, ms, value, units, fn_names[function]);
+      }
       g_print("%06d\t%.10f %s\t(%s)\r", i, value, units, fn_names[function]);
 
       samples[samples_count++] = value;
@@ -246,12 +275,6 @@ int main(int argc, char **argv)
     g_print("============================================\r\n");
   }
 
-  // Vytvoreni noveho logovaciho souboru
-  // zaznam_yymmddhhiiss.csv
-  uint32_t ms;
-  get_formated_datetime(config.logfilename, sizeof(config.logfilename), "zaznam_%y%m%d%H%M%S.csv", &ms);
-  logfile = fopen(config.logfilename, "w");
-
   // Stavime okno programu z externiho XML
   builder = gtk_builder_new();
   gtk_builder_add_from_file(builder, GUI_XML_FILE, NULL);
@@ -280,6 +303,7 @@ int main(int argc, char **argv)
   // Propojeni ikon v hlavnim okne
   icoPlay = GTK_WIDGET(gtk_builder_get_object(builder, "icoPlay"));
   icoPause = GTK_WIDGET(gtk_builder_get_object(builder, "icoPause"));
+  chbSavingToFile = GTK_WIDGET(gtk_builder_get_object(builder, "chbSavingToFile"));
 
   // Propojeni signalu
   gtk_builder_connect_signals(builder, NULL);
@@ -298,7 +322,7 @@ int main(int argc, char **argv)
   pthread_join(th_uart, NULL);
 
   // Uzavreni logovaciho souboru
-  fclose(logfile);
+  if(is_file_opened) fclose(logfile);
 
   // Uzavreni serioveho spojeni
   multimeter_close_port();
